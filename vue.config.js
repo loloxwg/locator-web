@@ -26,6 +26,7 @@ module.exports = {
     proxy: {
       '/api': {
         target: 'http://121.4.217.63:8080/',
+        // target: 'http://127.0.0.1:8888',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

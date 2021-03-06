@@ -1,5 +1,5 @@
 <template>
-  <div to="body" class="gh_empForm">
+  <div class="gh_empForm">
     <el-form
       class="gh_form"
       ref="ruleForm"
@@ -54,7 +54,7 @@
       <el-col>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('ruleForm')"
-            >{{ edit ? '更新' : '添加' }} 成员
+            >{{ edit ? '更新' : '添加' }}成员
           </el-button>
           <el-button @click="closeForm">取消</el-button>
         </el-form-item>
@@ -137,7 +137,6 @@ export default {
               delete form[i]
             }
           }
-          console.log(form)
           axios
             .post(
               this.GLOBAL.serverUrl +
@@ -150,6 +149,7 @@ export default {
                 message: (this.edit ? '更新' : '插入') + '成功',
                 type: 'success'
               })
+              this.closeForm()
             })
             .catch(err => {
               this.$message.error('数据操作出错，打开控制台查看详细信息')
