@@ -103,7 +103,7 @@ export default {
         // 还可以直接把参数拼接在url后边
         params: {
           page: 1,
-          limit: 10
+          limit: 0
         }
       })
       .then(function(res) {

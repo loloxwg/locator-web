@@ -105,7 +105,7 @@ export default {
     },
     // Show the wifi signal form.
     editWifiSignal(wifi) {
-      this.formData = wifi
+      this.formData = { ...wifi }
       this.wifiFormShow = true
     },
     // When you close the form.
@@ -147,6 +147,6 @@ export default {
 <style lang="scss" scoped>
 .gh_page {
   text-align: center;
-  background-color: #FFF;
+  background-color: #fff;
 }
 </style>

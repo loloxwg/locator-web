@@ -169,7 +169,7 @@ export default {
     // Show the employee form.
     editEmployee(emp) {
       if (emp !== 0) {
-        this.empFormData = emp
+        this.empFormData = { ...emp }
       }
       this.formShow = true
     },
