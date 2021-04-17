@@ -4,7 +4,7 @@
 <script>
 const showMap = () => import('@/components/showMap.vue')
 export default {
-  data() {
+  data () {
     return {}
   },
   components: {
@@ -12,7 +12,7 @@ export default {
   },
   methods: {
     // Get message from showMap son.
-    mapSend(ev) {
+    mapSend (ev) {
       this.$emit('getMapId', ev.mapId)
     }
   }

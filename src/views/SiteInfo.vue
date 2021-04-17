@@ -1,88 +1,100 @@
 <template>
   <div class="gh_siteInfo gh_height100">
     <div class="gh_flexLeft">
-      <router-view name="siteinfo" @getMapId="getMapId"></router-view>
+      <router-view name="siteinfo"
+                   @getMapId="getMapId"></router-view>
     </div>
     <div class="gh_flexRight">
-      <el-table
-        class="gh_table gh_height100"
-        :data="sites.list"
-        style="width: 100%"
-        :header-cell-style="{ textAlign: 'center' }"
-        :cell-style="{ textAlign: 'center' }"
-      >
-        <el-table-column type="index"></el-table-column>
-        <el-table-column prop="siteId" width="50" label="SID">
+      <el-table class="gh_table gh_height100"
+                :data="sites.list"
+                style="width: 100%"
+                :header-cell-style="{ textAlign: 'center' }"
+                :cell-style="{ textAlign: 'center' }">
+        <el-table-column type="index">
+          <template slot="header">
+            <el-tooltip class="item"
+                        effect="dark"
+                        content="添加"
+                        placement="top"
+                        :enterable="false">
+              <el-button icon="el-icon-plus"
+                         type="success"
+                         plain
+                         circle
+                         size="mini"
+                         @click="handleAdd"></el-button>
+            </el-tooltip>
+          </template>
         </el-table-column>
-        <el-table-column prop="siteName" label="地点名称" show-overflow-tooltip>
+        <el-table-column prop="siteId"
+                         width="50"
+                         label="SID">
         </el-table-column>
-        <el-table-column
-          prop="siteLocate"
-          label="地理位置"
-          show-overflow-tooltip
-        >
+        <el-table-column prop="siteName"
+                         label="地点名称"
+                         show-overflow-tooltip>
         </el-table-column>
-        <el-table-column prop="siteMapId" width="50" label="所处地图">
+        <el-table-column prop="siteLocate"
+                         label="地理位置"
+                         show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column prop="siteMapId"
+                         width="50"
+                         label="所处地图">
           <template slot-scope="scope">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :content="scope.row.siteMapName"
-              placement="top-start"
-            >
+            <el-tooltip class="item"
+                        effect="dark"
+                        :content="scope.row.siteMapName"
+                        placement="top-start">
               <el-tag :type="scope.row.siteMapId | tagColor">
                 {{ scope.row.siteMapId }}
               </el-tag>
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="siteAttribute"
-          label="工作内容"
-          show-overflow-tooltip
-        >
+        <el-table-column prop="siteAttribute"
+                         label="工作内容"
+                         empty-text="无"
+                         show-overflow-tooltip>
         </el-table-column>
-        <el-table-column prop="siteDate" label="创建时间" show-overflow-tooltip>
+        <el-table-column prop="siteDate"
+                         label="创建时间"
+                         show-overflow-tooltip>
           <template slot-scope="scope">{{
             scope.row.empDate | formatDate
           }}</template>
         </el-table-column>
         <el-table-column width="50">
           <template slot-scope="scope">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="编辑"
-              placement="top"
-              :enterable="false"
-              :hide-after="500"
-            >
-              <el-button
-                icon="el-icon-edit"
-                circle
-                size="mini"
-                @click="handleEdit(scope.row)"
-              ></el-button>
+            <el-tooltip class="item"
+                        effect="dark"
+                        content="编辑"
+                        placement="top"
+                        :enterable="false"
+                        :hide-after="500">
+              <el-button icon="el-icon-edit"
+                         circle
+                         size="mini"
+                         @click="handleEdit(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        class="gh_page"
-        @current-change="pageChange"
-        layout="prev, pager, next"
-        :total="sites.total"
-      >
+      <el-pagination class="gh_page"
+                     @current-change="pageChange"
+                     layout="prev, pager, next"
+                     :total="sites.total">
       </el-pagination>
-      <el-dialog
-        title="地点编辑"
-        :visible.sync="dialogFormVisible"
-        width="30%"
-        :close-on-click-modal="false"
-      >
-        <el-form :model="formInfo" label-suffix="：" label-width="100px">
+      <el-dialog :title="addForm?'地点添加':'地点编辑'"
+                 :visible.sync="editFormVisible"
+                 width="30%"
+                 :close-on-click-modal="false">
+        <el-form :model="formInfo"
+                 label-suffix="："
+                 label-width="100px">
           <el-form-item label="SID">
-            <el-input v-model="formInfo.siteId" :disabled="true"></el-input>
+            <el-input :value="formInfo.siteId?formInfo.siteId:'添加后自动获取'"
+                      :disabled="true"></el-input>
           </el-form-item>
           <el-form-item label="地点名称">
             <el-input v-model="formInfo.siteName"></el-input>
@@ -91,17 +103,13 @@
             <el-input v-model="formInfo.siteLocate"></el-input>
           </el-form-item>
           <el-form-item label="所处地图">
-            <el-select
-              class="gh_select"
-              v-model="formInfo.siteMapId"
-              placeholder="选择地图"
-            >
-              <el-option
-                v-for="item in maps.list"
-                :value="'' + item.mapId"
-                :key="item.mapId"
-                :label="item.mapName + '(' + 'id:' + item.mapId + ')'"
-              >
+            <el-select class="gh_select"
+                       v-model="formInfo.siteMapId"
+                       placeholder="选择地图">
+              <el-option v-for="item in maps.list"
+                         :value="item.mapId"
+                         :key="item.mapId"
+                         :label="item.mapName + '(' + 'id:' + item.mapId + ')'">
               </el-option>
             </el-select>
           </el-form-item>
@@ -112,29 +120,29 @@
             {{ formInfo.siteDate | formatDate }}
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-popover
-            placement="top"
-            width="160"
-            v-model="confirmVisible"
-            style="float: left;"
-          >
+        <div slot="footer"
+             class="dialog-footer">
+          <el-popover placement="top"
+                      v-if="!addForm"
+                      width="160"
+                      v-model="confirmVisible"
+                      style="float: left;">
             <p>此操作不可逆，确定删除吗？</p>
             <div style="text-align: right; margin: 0">
-              <el-button size="mini" type="text" @click="confirmVisible = false"
-                >取消</el-button
-              >
-              <el-button
-                type="primary"
-                size="mini"
-                @click="siteDelete(formInfo.siteId), (confirmVisible = false)"
-                >确定</el-button
-              >
+              <el-button size="mini"
+                         type="text"
+                         @click="confirmVisible = false">取消</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="siteDelete(formInfo.siteId), (confirmVisible = false)">确定</el-button>
             </div>
-            <el-button slot="reference" type="danger" plain>删除地点</el-button>
+            <el-button slot="reference"
+                       type="danger"
+                       plain>删除地点</el-button>
           </el-popover>
           <el-button @click="formClose">取 消</el-button>
-          <el-button type="primary" @click="formSubmit">确 定 </el-button>
+          <el-button type="primary"
+                     @click="formSubmit">确 定 </el-button>
         </div>
       </el-dialog>
     </div>
@@ -144,19 +152,21 @@
 import axios from 'axios'
 import moment from 'moment'
 export default {
-  data() {
+  data () {
     return {
       sites: [], // It is all the site model list that it will show in the site table.
-      dialogFormVisible: false, // If you can use the form.
+      editFormVisible: false, // If you can use the form.
+      addForm: false, // If you can use the add site form.
       formInfo: {}, // The site info mounted form.
       sitePage: 1, // The site info page now.
       confirmVisible: false, // When you delete,it will pop.
-      maps: [] // All map model list,you can use it to select an map.
+      maps: [], // All map model list,you can use it to select an map.
+      mapId: null // The map which do you select.
     }
   },
   filters: {
     // turn the date to YYYY-MM-DD style
-    formatDate: function(value) {
+    formatDate: function (value) {
       return moment(value).format('YYYY-MM-DD')
     },
     tagColor: id => {
@@ -174,12 +184,12 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     // You must set it in mounted.
     this.getSiteList(1, 0)
   },
   watch: {
-    $route(to) {
+    $route (to) {
       // When you go to siteinfo first,it will not trigger SiteCard,so you must set it in mounted.
       if (to.name === 'SiteCard') {
         this.getSiteList(1, 0)
@@ -188,15 +198,15 @@ export default {
   },
   methods: {
     // get the site list of the map which you selected or all the maps
-    getSiteList(page, res) {
-      var mapId = res === 0 ? null : res
+    getSiteList (page, res) {
+      this.mapId = res === 0 ? null : res
       var that = this
       axios
         .get(
           that.GLOBAL.serverUrl +
-            (mapId
-              ? 'locator_server/site/select?siteMapId=' + mapId
-              : 'locator_server/site/query'),
+          (this.mapId
+            ? 'locator_server/site/select?siteMapId=' + this.mapId
+            : 'locator_server/site/query'),
           {
             // 还可以直接把参数拼接在url后边
             params: {
@@ -205,72 +215,108 @@ export default {
             }
           }
         )
-        .then(function(res) {
+        .then(function (res) {
           that.sites = res.data
           // console.log(res.data)
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error)
         })
     },
     // get MapId from child and update the site list
-    getMapId(res) {
+    getMapId (res) {
       // console.log(res)
       this.getSiteList(1, res)
     },
     // The site edit event.
-    handleEdit(row) {
-      this.dialogFormVisible = true
+    handleEdit (row) {
+      this.addForm = false
+      this.editFormVisible = true
       this.formInfo = { ...row }
       this.getMapList()
     },
+    // The site add event.
+    handleAdd () {
+      this.addForm = true
+      this.editFormVisible = true
+      this.formInfo = { siteMapId: this.mapId }
+      this.getMapList()
+    },
     // When you close the form.
-    formClose() {
-      this.dialogFormVisible = false
+    formClose () {
+      this.editFormVisible = false
       this.formInfo = {}
     },
     // When you submit the form.
-    formSubmit() {
-      var info = { ...this.formInfo }
-      delete info.siteDate
-      delete info.siteMapName
-      axios
-        .get(this.GLOBAL.serverUrl + 'locator_server/site/update', {
-          params: info
-        })
-        .then(res => {
-          if (res.data === 1) {
-            this.$message({ message: '更新成功！', type: 'success' })
-            this.getSiteList(this.sitePage)
-            this.dialogFormVisible = false
-          } else {
-            this.$message.error('更新失败！')
-          }
-        })
+    formSubmit () {
+      var info = {}
+      if (this.addForm) {
+        // 添加数据
+        if (!this.formInfo.siteMapId) {
+          this.$alert('地图必须选择', '提示', {
+            confirmButtonText: '确定'
+          })
+          return
+        }
+        info = { ...this.formInfo }
+        delete info.siteDate
+        delete info.siteMapName
+        axios
+          .get(this.GLOBAL.serverUrl + 'locator_server/site/insert', {
+            params: info
+          })
+          .then(res => {
+            if (res.data === 1) {
+              this.$message({ message: '新增成功！', type: 'success' })
+              this.getSiteList(this.sitePage, this.mapId)
+              this.editFormVisible = false
+            } else {
+              this.$message.error('新增失败！')
+            }
+          })
+      } else {
+        // 更改数据
+        info = { ...this.formInfo }
+        delete info.siteDate
+        delete info.siteMapName
+        axios
+          .get(this.GLOBAL.serverUrl + 'locator_server/site/update', {
+            params: info
+          })
+          .then(res => {
+            if (res.data === 1) {
+              this.$message({ message: '更新成功！', type: 'success' })
+              this.getSiteList(this.sitePage, this.mapId)
+              this.editFormVisible = false
+            } else {
+              this.$message.error('更新失败！')
+            }
+          })
+      }
     },
     // When the page is changed
-    pageChange(res) {
-      this.getSiteList(res)
+    pageChange (res) {
+      this.getSiteList(res, this.mapId)
       this.sitePage = res
     },
     // Delete the site by siteId.
-    siteDelete(id) {
+    siteDelete (id) {
       axios
         .get(this.GLOBAL.serverUrl + 'locator_server/site/delete', {
           params: { siteId: id }
         })
         .then(res => {
-          if (res === 1) {
-            this.$message({ $message: '删除成功！', type: 'success' })
-            this.getSiteList(this.sitePage, 9)
-            this.dialogFormVisible = false
+          if (res.data === 1) {
+            this.$message({ message: '删除成功！', type: 'success' })
+            this.getSiteList(this.sitePage, this.mapId)
+            this.editFormVisible = false
           } else {
             this.$message.error('删除失败！')
           }
         })
     },
     // get map list
-    getMapList() {
+    getMapList () {
       var that = this
       axios
         .get(this.GLOBAL.serverUrl + 'locator_server/map/query', {
@@ -280,11 +326,11 @@ export default {
             limit: 0
           }
         })
-        .then(function(res) {
+        .then(function (res) {
           that.maps = res.data
           // console.log(res.data)
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error)
         })
     }

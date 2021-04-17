@@ -2,9 +2,8 @@
   <div class="gh_map">
     <div class="gh_flow">
       <div class="gh_padding">
-        <div
-          class="gh_img"
-          :style="
+        <div class="gh_img"
+             :style="
             'background-image:url(' +
               mapSelected.mapUrl +
               ');width: ' +
@@ -12,36 +11,33 @@
               'px;height: ' +
               blockValue * mapSelected.mapY +
               'px;'
-          "
-        >
-          <canvas width="0" height="0" v-show="gridShow" id="grid"></canvas>
+          ">
+          <canvas width="0"
+                  height="0"
+                  v-show="gridShow"
+                  id="grid"></canvas>
         </div>
       </div>
     </div>
     <div class="gh_ctrlBar">
       <div class="gh_block">
         <span class="gh_span">缩放：{{ blockValue }}%</span>
-        <el-slider
-          class="gh_slider"
-          :label="111"
-          :min="10"
-          :max="200"
-          :step="10"
-          v-model="blockValue"
-          :disabled="blockUse"
-        >
+        <el-slider class="gh_slider"
+                   :label="111"
+                   :min="10"
+                   :max="200"
+                   :step="10"
+                   v-model="blockValue"
+                   :disabled="blockUse">
         </el-slider>
       </div>
-      <el-select
-        class="gh_select"
-        v-model="mapValue"
-        @change="mapSend"
-        placeholder="选择地图"
-      >
-        <el-option
-          v-for="item in maps.list"
-          :key="item.mapName + '(id:' + item.mapId + ')'"
-          :label="
+      <el-select class="gh_select"
+                 v-model="mapValue"
+                 @change="mapSend"
+                 placeholder="选择地图">
+        <el-option v-for="item in maps.list"
+                   :key="item.mapName + '(id:' + item.mapId + ')'"
+                   :label="
             item.mapName +
               '(' +
               'id:' +
@@ -52,22 +48,17 @@
               item.mapY +
               ')'
           "
-          :value="item"
-        >
+                   :value="item">
         </el-option>
       </el-select>
       <div class="gh_gridSwitch">
         <label>{{ (gridShow ? '显示' : '隐藏') + '方格：' }}</label>
-        <el-tooltip
-          class="gh_switch"
-          :content="'方格: ' + (gridShow ? '显示' : '隐藏')"
-          placement="top"
-        >
-          <el-switch
-            v-model="gridShow"
-            active-color="#13ce66"
-            inactive-color="#aaa"
-          >
+        <el-tooltip class="gh_switch"
+                    :content="'方格: ' + (gridShow ? '显示' : '隐藏')"
+                    placement="top">
+          <el-switch v-model="gridShow"
+                     active-color="#13ce66"
+                     inactive-color="#aaa">
           </el-switch>
         </el-tooltip>
       </div>
@@ -80,7 +71,7 @@
 <script>
 import axios from 'axios'
 export default {
-  data() {
+  data () {
     return {
       maps: [], // All map model list,you can use it to select an map.
       blockValue: 100, // How to enlarged or reduce the picture
@@ -88,10 +79,11 @@ export default {
       mapValue: '', // Which map model do you select,it's only a key on option.
       mapSelected: [], // An using map model now.
       gridShow: true, // If the grid can be visit.
-      gridSite: { x: 0, y: 0 } // Get mouse site.
+      gridSite: { x: 0, y: 0 }, // Get mouse site.
+      mouseClick: { x: 50, y: 50 }
     }
   },
-  mounted() {
+  mounted () {
     var that = this
     // find router porps
     if (this.$route.params.map) {
@@ -106,17 +98,17 @@ export default {
           limit: 0
         }
       })
-      .then(function(res) {
+      .then(function (res) {
         that.maps = res.data
         // console.log(res.data)
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error)
       })
   },
   methods: {
     // send the map message to parent and change the select
-    mapSend(item) {
+    mapSend (item) {
       this.$emit('mapSend', item)
       this.mapValue = item.mapName + '(id:' + item.mapId + ')'
       this.blockUse = false
@@ -125,7 +117,7 @@ export default {
       this.drawGrid()
     },
     // Draw grid in the canvas.
-    drawGrid() {
+    drawGrid () {
       var grid = document.getElementById('grid')
       var draw = grid.getContext('2d')
       var mapX = this.mapSelected.mapX
@@ -163,7 +155,7 @@ export default {
       this.mouseSite(grid)
     },
     // Get mouse site.
-    mouseSite(grid) {
+    mouseSite (grid) {
       grid.addEventListener(
         'mousemove',
         e => {
@@ -194,7 +186,8 @@ export default {
     position: absolute;
     border: solid 60px #ddd;
     .gh_img {
-      background-size: cover;
+      background-size: contain;
+      background-repeat: no-repeat;
     }
     #grid {
       width: 100%;
@@ -223,7 +216,7 @@ export default {
       float: right;
     }
   }
-  .gh_site{
+  .gh_site {
     background-color: #fff;
     padding: 0 16px;
     border-radius: 18px;

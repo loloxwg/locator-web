@@ -1,51 +1,57 @@
 <template>
   <div class="gh_map">
-    <el-form class="gh_form" ref="form" :model="form" label-width="80px">
+    <el-form class="gh_form"
+             ref="form"
+             :model="form"
+             label-width="80px">
       <h1>添加地图</h1>
       <el-form-item label="地图名称:">
         <el-input v-model="form.mapName"></el-input>
       </el-form-item>
       <el-form-item label="地图尺寸:">
         <el-col :span="2">X</el-col>
-        <el-col :span="10"><el-input v-model="form.mapX"></el-input></el-col>
+        <el-col :span="10">
+          <el-input v-model="form.mapX"></el-input>
+        </el-col>
         <el-col :span="2">Y</el-col>
-        <el-col :span="10"><el-input v-model="form.mapY"></el-input></el-col>
+        <el-col :span="10">
+          <el-input v-model="form.mapY"></el-input>
+        </el-col>
       </el-form-item>
       <el-form-item label="图片url:">
         <el-input v-model="form.mapUrl"></el-input>
       </el-form-item>
       <div class="gh_imgbox">
-        <el-upload
-          v-if="uploadShow"
-          class="upload-demo"
-          ref="upload"
-          drag
-          limit="1"
-          action="#"
-          :http-request="useCosKeyUpload"
-          multiple
-        >
+        <el-upload v-if="uploadShow"
+                   class="upload-demo"
+                   ref="upload"
+                   drag
+                   limit="1"
+                   action="#"
+                   :http-request="useCosKeyUpload"
+                   multiple>
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-          <div class="el-upload__tip" slot="tip">
+          <div class="el-upload__tip"
+               slot="tip">
             只能上传jpg/png文件，且不超过500kb
           </div>
         </el-upload>
         <div v-if="!uploadShow">
-          <el-image class="gh_img" :src="imgUrl" fit="contain"></el-image>
+          <el-image class="gh_img"
+                    :src="imgUrl"
+                    fit="contain"></el-image>
           <br />
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            plain
-            size="mini"
-            @click="reupLoad"
-            >重新上传</el-button
-          >
+          <el-button type="danger"
+                     icon="el-icon-delete"
+                     plain
+                     size="mini"
+                     @click="reupLoad">重新上传</el-button>
         </div>
       </div>
       <div class="gh_btn">
-        <el-button type="primary" @click="onSubmit">{{
+        <el-button type="primary"
+                   @click="onSubmit">{{
           btnCreate ? '立即创建' : '立即更新'
         }}</el-button>
         <el-button @click="closeForm">取消</el-button>
@@ -56,10 +62,11 @@
 <script>
 import moment from 'moment'
 import axios from 'axios'
-const COS = () => import('cos-js-sdk-v5')
+// const COS = () => import('cos-js-sdk-v5')
+import COS from 'cos-js-sdk-v5'
 
 export default {
-  data() {
+  data () {
     return {
       form: {
         mapName: '',
@@ -73,8 +80,8 @@ export default {
     }
   },
   props: ['mapValue'],
-  mounted() {
-    // When you update the map,it will set some props for form.
+  mounted () {
+    // When you update the map,it will set some params for form.
     if (this.mapValue !== null) {
       var map = this.mapValue
       this.form.mapName = map.mapName
@@ -88,18 +95,18 @@ export default {
   },
   methods: {
     // send a close signal to parent
-    closeForm() {
+    closeForm () {
       this.$emit('listenFormShow', false)
     },
     // get an cos key to upload file,it will return an COS Object.
-    getCosKey() {
+    getCosKey () {
       var that = this
       var cos = new COS({
         // 必选参数
-        getAuthorization: function(options, callback) {
+        getAuthorization: function (options, callback) {
           axios
             .get(that.GLOBAL.serverUrl + '/locator_server/cossts')
-            .then(function(res) {
+            .then(function (res) {
               var data = res.data
               var credentials = data && data.credentials
               if (!data || !credentials) {
@@ -119,7 +126,7 @@ export default {
       return cos
     },
     // you can use this function to upload file
-    useCosKeyUpload(upload) {
+    useCosKeyUpload (upload) {
       var that = this
       var file = upload.file
       var cos = that.getCosKey()
@@ -139,12 +146,12 @@ export default {
           Region: 'ap-shanghai' /* 存储桶所在地域，必须字段 */,
           Key: mapUrl /* 必须 */,
           StorageClass: 'STANDARD',
-          Body: file // 上传文件对象
-          // onProgress: function(progressData) {
-          // console.log(JSON.stringify(progressData))
-          // }
+          Body: file, // 上传文件对象
+          onProgress: function (progressData) {
+            console.log(JSON.stringify(progressData))
+          }
         },
-        function(err, data) {
+        function (err, data) {
           // console.log(err || data)
           if (!err) {
             that.imgUrl = 'http://' + data.Location
@@ -156,18 +163,18 @@ export default {
       )
     },
     // when you click the delete button
-    reupLoad() {
+    reupLoad () {
       this.uploadShow = true
       this.form.mapUrl = '上传后显示或手动输入'
     },
     // on form submit create or update
-    onSubmit() {
+    onSubmit () {
       var that = this
       axios
         .get(
           that.GLOBAL.serverUrl +
-            '/locator_server/map/' +
-            (this.btnCreate ? 'insert' : 'update?mapId=' + this.mapValue.mapId),
+          '/locator_server/map/' +
+          (this.btnCreate ? 'insert' : 'update?mapId=' + this.mapValue.mapId),
           {
             params: {
               mapName: that.form.mapName,

@@ -1,35 +1,33 @@
 <template>
   <div class="gh_wifiform">
-    <el-form
-      class="gh_form"
-      ref="ruleForm"
-      :model="wifiData"
-      label-width="100px"
-      :rules="rules"
-    >
+    <el-form class="gh_form"
+             ref="ruleForm"
+             :model="wifiData"
+             label-width="100px"
+             :rules="rules">
       <el-col :span="12">
-        <el-form-item label="指纹号:" prop="wifiId">
-          <el-input v-model="form.wifiId" :disabled="true"></el-input>
+        <el-form-item label="指纹号:"
+                      prop="wifiId">
+          <el-input v-model="form.wifiId"
+                    :disabled="true"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="所处位置:" prop="wifiSiteId">
+        <el-form-item label="所处位置:"
+                      prop="wifiSiteId">
           <el-input v-model="form.wifiSiteId"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="横向位置:" prop="wifiGridX">
+        <el-form-item label="横向位置:"
+                      prop="wifiGridX">
           <el-input v-model.number="form.wifiGridX"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="纵向位置:" prop="wifiGridY">
+        <el-form-item label="纵向位置:"
+                      prop="wifiGridY">
           <el-input v-model.number="form.wifiGridY"></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col>
-        <el-form-item label="指纹信号:" prop="wifiSignal">
-          <el-input v-model="form.wifiSignal"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -38,13 +36,13 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="创建时间:">
+        <el-form-item label="更新时间:">
           {{ wifiLastTime | formatDate }}
         </el-form-item>
       </el-col>
       <el-col style="text-align: center;">
-        <el-button type="primary" @click="onSubmit('ruleForm')"
-          >更新指纹
+        <el-button type="primary"
+                   @click="onSubmit('ruleForm')">更新指纹
         </el-button>
         <el-button @click="closeForm">取消</el-button>
       </el-col>
@@ -56,14 +54,13 @@ import axios from 'axios'
 import moment from 'moment'
 export default {
   props: ['wifiData'],
-  data() {
+  data () {
     return {
       form: {
         wifiId: '',
         wifiSiteId: '',
         wifiGridX: '',
         wifiGridY: '',
-        wifiSignal: '',
         wifiLastTime: '',
         wifiAddTime: ''
       }, // The data in form.
@@ -93,7 +90,7 @@ export default {
       } // The rules of form.
     }
   },
-  mounted() {
+  mounted () {
     if (this.wifiData) {
       for (var i in this.wifiData) {
         this.form[i] = this.wifiData[i]
@@ -101,17 +98,17 @@ export default {
     }
   },
   filters: {
-    formatDate: function(value) {
+    formatDate: function (value) {
       return moment(value).format('YYYY-MM-DD HH:mm:ss')
     }
   },
   methods: {
     // When you click the close button.
-    closeForm() {
+    closeForm () {
       this.$emit('formClose', false)
     },
     // When you submit the form.
-    onSubmit(formName) {
+    onSubmit (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           var form = this.form
