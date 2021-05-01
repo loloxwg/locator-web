@@ -2,8 +2,9 @@
   <div class="gh_map">
     <div class="gh_flow">
       <div class="gh_padding">
-        <div class="gh_img"
-             :style="
+        <div
+          class="gh_img"
+          :style="
             'background-image:url(' +
               mapSelected.mapUrl +
               ');width: ' +
@@ -11,33 +12,55 @@
               'px;height: ' +
               blockValue * mapSelected.mapY +
               'px;'
-          ">
-          <canvas width="0"
-                  height="0"
-                  v-show="gridShow"
-                  id="grid"></canvas>
+          "
+        >
+          <canvas width="0" height="0" v-show="gridShow" id="grid"></canvas>
+          <el-tooltip
+            v-show="mapValue!=''"
+            v-for="user in usersInfo"
+            :key="user.userId"
+            trigger="manual"
+            class="item"
+            effect="dark"
+            v-model="user.hover"
+            :content="user.userId"
+            placement="top"
+          >
+            <i
+              :style="'left:'+((100*user.gridX-75)*blockValue/100)+'px;top:'+((100*user.gridY-75-15)*blockValue/100)+'px;'+
+            'font-size:'+(50*blockValue/100)+'px;'"
+              class="gh_point el-icon-location"
+            ></i>
+          </el-tooltip>
+          <!-- <i
+            v-show="mapValue!=''"
+            v-for="user in usersInfo"
+            :key="user.userId"
+            :style="'left:'+((100*user.gridX-75)*blockValue/100)+'px;top:'+((100*user.gridY-75-15)*blockValue/100)+'px;'+
+            'font-size:'+(50*blockValue/100)+'px;'"
+            class="gh_point el-icon-location"
+          ></i>-->
         </div>
       </div>
     </div>
     <div class="gh_ctrlBar">
       <div class="gh_block">
         <span class="gh_span">缩放：{{ blockValue }}%</span>
-        <el-slider class="gh_slider"
-                   :label="111"
-                   :min="10"
-                   :max="200"
-                   :step="10"
-                   v-model="blockValue"
-                   :disabled="blockUse">
-        </el-slider>
+        <el-slider
+          class="gh_slider"
+          :label="111"
+          :min="10"
+          :max="200"
+          :step="10"
+          v-model="blockValue"
+          :disabled="blockUse"
+        ></el-slider>
       </div>
-      <el-select class="gh_select"
-                 v-model="mapValue"
-                 @change="mapSend"
-                 placeholder="选择地图">
-        <el-option v-for="item in maps.list"
-                   :key="item.mapName + '(id:' + item.mapId + ')'"
-                   :label="
+      <el-select class="gh_select" v-model="mapValue" @change="mapSend" placeholder="选择地图">
+        <el-option
+          v-for="item in maps.list"
+          :key="item.mapName + '(id:' + item.mapId + ')'"
+          :label="
             item.mapName +
               '(' +
               'id:' +
@@ -48,18 +71,13 @@
               item.mapY +
               ')'
           "
-                   :value="item">
-        </el-option>
+          :value="item"
+        ></el-option>
       </el-select>
       <div class="gh_gridSwitch">
         <label>{{ (gridShow ? '显示' : '隐藏') + '方格：' }}</label>
-        <el-tooltip class="gh_switch"
-                    :content="'方格: ' + (gridShow ? '显示' : '隐藏')"
-                    placement="top">
-          <el-switch v-model="gridShow"
-                     active-color="#13ce66"
-                     inactive-color="#aaa">
-          </el-switch>
+        <el-tooltip class="gh_switch" :content="'方格: ' + (gridShow ? '显示' : '隐藏')" placement="top">
+          <el-switch v-model="gridShow" active-color="#13ce66" inactive-color="#aaa"></el-switch>
         </el-tooltip>
       </div>
       <div class="gh_site">
@@ -71,6 +89,7 @@
 <script>
 import axios from 'axios'
 export default {
+  props: ['usersInfo'],
   data () {
     return {
       maps: [], // All map model list,you can use it to select an map.
@@ -238,5 +257,11 @@ export default {
     float: right;
     margin-right: 20px;
   }
+}
+.gh_point {
+  position: absolute;
+  left: 100px;
+  top: 100px;
+  color: #f80;
 }
 </style>

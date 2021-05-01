@@ -2,21 +2,17 @@
   <div id="app">
     <el-container class="gh_height100">
       <el-header class="el-header">
-        <label class="gh_title"
-          >基于Wifi指纹室内定位的外包服务人员管理系统</label
-        >
+        <label class="gh_title">基于Wifi指纹室内定位的外包服务人员管理系统</label>
       </el-header>
       <hr />
       <el-container>
         <el-aside width="200px">
-          <el-menu
-            :default-active="activeIndex"
-            class="gh_height100 el-menu"
-            background-color="#456"
-            text-color="#fff"
-            active-text-color="#fd5"
-            @select="handleVerticalSelect"
-          >
+          <el-menu :default-active="activeIndex"
+                   class="gh_height100 el-menu"
+                   background-color="#456"
+                   text-color="#fff"
+                   active-text-color="#fd5"
+                   @select="handleVerticalSelect">
             <el-submenu index="1">
               <template slot="title">
                 <i class="el-icon-s-custom"></i>
@@ -54,13 +50,13 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       activeIndex: '0' // Which item are you select.
     }
   },
   watch: {
-    $route(to) {
+    $route (to) {
       switch (to.name) {
         case 'SiteInfo':
           this.activeIndex = 'SiteInfo'
@@ -82,7 +78,7 @@ export default {
   },
   methods: {
     // When you select an item in VerticalSelect,it will change the router.
-    handleVerticalSelect(key) {
+    handleVerticalSelect (key) {
       switch (key) {
         case 'EmployeeUDSI':
           this.$router.push('/employeeinfo/employeelist/employeeudsi')
@@ -106,8 +102,8 @@ export default {
 }
 </script>
 <style lang="scss">
-*{
-  font-family: '微软雅黑';
+* {
+  font-family: "微软雅黑";
 }
 hr {
   padding: 0;
@@ -120,6 +116,9 @@ hr {
 body {
   margin: 0;
   padding: 0;
+}
+.el-tabs__content {
+  overflow: auto;
 }
 .gh_height100 {
   height: 100%;
@@ -140,7 +139,7 @@ body {
 .gh_title {
   color: #eee;
   font-size: 22px;
-  font-family: '微软雅黑';
+  font-family: "微软雅黑";
 }
 .el-header,
 .el-footer {
@@ -149,11 +148,11 @@ body {
   text-align: center;
   line-height: 60px;
 }
-.el-main{
+.el-main {
   background-color: #eee;
   height: calc(100vh - 122px);
 }
-.el-menu{
+.el-menu {
   border: none;
 }
 </style>
