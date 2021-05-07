@@ -77,12 +77,12 @@
             type="danger"
             icon="el-icon-delete"
             circle
-            @click="handleDelete()"
+            @click="handleDelete(item)"
           ></el-button>
         </el-tooltip>
       </h3>
       <div>
-        主要内容：
+        <label style="line-height: 40px;">主要内容：</label>
         <el-input v-if="item.edit" v-model="item.job_main" type="textarea" placeholder="请输入主要内容"></el-input>
         <label v-else>{{item.job_main}}</label>
       </div>
@@ -113,18 +113,27 @@
         <label v-else>{{item.site_name}}</label>
       </div>
       <div>
-        参与人员：
+        <label style="line-height: 40px;">参与人员：</label>
         <el-tag
           class="gh_tag"
           closable
           :disable-transitions="false"
-          @close="handleClose(tag)"
           v-for="(user,index) in item.users_id_name"
-          :key="user"
+          @close="handleClose(user)"
+          :key="item.job_id+ '-' + user.id"
           :type="index | tagType"
           v-show="user.id !== '0'"
         >{{user.id}},{{user.name || '---'}}</el-tag>
-        <el-button class="button-new-tag" size="small" @click="handleAddUser">+ 添加人员</el-button>
+        <el-autocomplete
+          style="width: 200px;"
+          v-if="item.addUserInputVisible"
+          v-model="userNew"
+          ref="saveTagInput"
+          size="small"
+          :fetch-suggestions="querySearch"
+          @select="handleInputConfirm(item)"
+        ></el-autocomplete>
+        <el-button v-else size="small" @click="handleAddUser(item)">+ 添加人员</el-button>
       </div>
       <div>发布时间：{{item.job_add_time | formatDate}}</div>
     </el-card>
@@ -149,7 +158,10 @@ export default {
         siteList: [],
         mapId: ''
       },
-      mapList: []
+      mapList: [],
+      userNew: '',
+      allUsers: [],
+      refresh: true
     }
   },
   filters: {
@@ -181,14 +193,22 @@ export default {
           if (dataList[item].map_id === 0) {
             dataList[item].map_id = ''
             dataList[item].site_id = ''
+            this.$set(dataList[item], 'addUserInputVisible', false)
           }
         }
-        that.taskList = dataList
+        this.$set(that, 'taskList', dataList)
       })
     },
     // 任务中移除用户
     handleClose (tag) {
-      this.$message.error('暂时无法删除用户！')
+      axios.get(this.GLOBAL.serverUrl + 'locator_server/task/deletebytaskid?taskId=' + tag.task_id).then(res => {
+        if (res.data === 1) {
+          this.$message.success('移除人员成功！')
+        } else {
+          this.$message.error('移除人员失败！')
+        }
+        this.reLoading()
+      })
     },
     // 提交任务信息
     handleSubmit () {
@@ -242,8 +262,62 @@ export default {
       this.addNewVisible = true
     },
     // 添加任务成员
-    handleAddUser () {
-      this.$message('暂时无法添加人员！')
+    handleAddUser (item) {
+      // this.$message('暂时无法添加人员！')
+      for (var task in this.taskList) {
+        this.$set(this.taskList[task], 'addUserInputVisible', false)
+      }
+      this.userNew = ''
+      this.$set(item, 'addUserInputVisible', true)
+      this.$nextTick(_ => {
+        // 由于不止一个input，ref得到的是数组
+        this.$refs.saveTagInput[0].$refs.input.focus()
+      })
+      if (this.allUsers.length === 0) {
+        axios.get(this.GLOBAL.serverUrl + 'locator_server/user/query?limit=0').then(res => {
+          this.$set(this, 'allUsers', res.data.list.map((terminal) => {
+            // 格式化用户信息为value的格式
+            return {
+              value: terminal.userId
+            }
+          }))
+        })
+      }
+    },
+    querySearch (queryString, cb) {
+      var restaurants = this.allUsers
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    createFilter (queryString) {
+      return (restaurant) => {
+        return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
+    },
+    // 保存输入信息
+    handleInputConfirm (item) {
+      var inputValue = this.userNew
+      if (inputValue) {
+        // 保存信息
+        axios.get(this.GLOBAL.serverUrl + 'locator_server/task/addtask', {
+          params: {
+            job_id: item.job_id,
+            user_id: inputValue
+          }
+        }).then(res => {
+          if (res.data === 1) {
+            this.$message.success('用户插入成功!')
+          } else {
+            this.$message.error('用户插入失败!')
+          }
+          this.reLoading()
+        }).catch(_ => {
+          this.$message.error('用户插入失败!')
+        })
+      }
+      item.addUserInputVisible = false
+      this.userNew = ''
     },
     // 进行编辑
     handleEdit (item) {
@@ -282,8 +356,17 @@ export default {
       })
     },
     // 删除任务
-    handleDelete () {
-      this.$message('暂时无法删除任务！')
+    handleDelete (item) {
+      // this.$message('暂时无法删除任务！')
+      // console.log(item.job_id)
+      axios.get(this.GLOBAL.serverUrl + 'locator_server/site/select', {
+        params: {
+          jobId: item.job_id
+        }
+      }).then(res => {
+        // console.log(res.data)
+        this.$message.error('任务删除成功！')
+      })
     },
     // 获取位置列表
     getSiteList (mapId, item) {
