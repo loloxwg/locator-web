@@ -11,9 +11,9 @@ export default {
     open() {
       this.$prompt('验证信息:', '请输入验证信息', {
         confirmButtonText: '确定',
-        showClose: false,
-        showCancelButton: false,
-        closeOnClickModal: false,
+        showClose: true,
+        showCancelButton: true,
+        closeOnClickModal: true,
         inputPattern: /master/,
         inputErrorMessage: '验证信息不正确',
         inputPlaceholder: '请输入验证信息',

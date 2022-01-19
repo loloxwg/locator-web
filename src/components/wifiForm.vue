@@ -52,6 +52,7 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import Qs from 'qs'
 export default {
   props: ['wifiData'],
   data () {
@@ -120,9 +121,8 @@ export default {
             }
           }
           axios
-            .get(this.GLOBAL.serverUrl + 'locator_server/wifi/update', {
-              params: form
-            })
+            .post(this.GLOBAL.serverUrl + 'locator_server/wifi/update', Qs.stringify(form)
+            )
             .then(res => {
               this.$message({ message: '更新成功！', type: 'success' })
               this.closeForm()
