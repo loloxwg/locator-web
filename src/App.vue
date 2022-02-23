@@ -2,7 +2,7 @@
   <div id="app">
     <el-container class="gh_height100">
       <el-header class="el-header">
-        <label class="gh_title">基于Wifi指纹室内定位的外包服务人员管理系统</label>
+        <label class="gh_title">基于Wifi指纹室内定位的人员管理系统</label>
       </el-header>
       <hr />
       <el-container>

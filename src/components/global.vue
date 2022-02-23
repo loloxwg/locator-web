@@ -10,7 +10,7 @@
 // 部署阶段↓↓↓↓↓↓↓↓
 const showMapImg = ''
 // const serverUrl = 'http://121.4.217.63:8080/'
-const serverUrl = 'http://47.110.161.238:8888/'
+const serverUrl = 'http://124.222.47.219:9100/'
 // 部署阶段↑↑↑↑↑↑↑↑
 export default {
   serverUrl,
